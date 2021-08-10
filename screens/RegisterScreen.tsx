@@ -3,7 +3,7 @@ import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, View } from "reac
 import { Button, Input, Text } from 'react-native-elements'
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import tailwind from 'tailwind-rn'
-import { auth } from '../firebase';
+import { auth, firestore } from '../firebase';
 
 const RegisterScreen = ({ navigation }: any) => {
 	const [username, setUsername] = useState("")
@@ -11,11 +11,23 @@ const RegisterScreen = ({ navigation }: any) => {
 	const [password, setPassword] = useState("")
 
 	const handleRegister = async () => {
-		const newUser = await auth.createUserWithEmailAndPassword(email, password)
-		newUser.user?.updateProfile({
-			displayName: username,
-			photoURL: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png'
-		})
+		try {
+			const newUserFirestore = {
+				friends: []
+			}
+
+			const newUser = await auth.createUserWithEmailAndPassword(email, password)
+			await firestore.collection(`users`).doc(newUser?.user?.uid).set(newUserFirestore)
+
+			await newUser.user?.updateProfile({
+				displayName: username,
+				photoURL: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png'
+			})
+			console.log("I am here")
+
+		} catch (error) {
+			console.log(error)
+		}
 		
 	}
 

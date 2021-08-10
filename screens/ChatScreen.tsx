@@ -11,8 +11,10 @@ import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
 import { useAuthUser } from '../auth/auth-hook'
+import ChatUser from '../components/ChatUser'
+import ChatOther from '../components/ChatOther'
 
-type Message = {
+export type Message = {
 	photoURL: string;
 	text: string;
 	timestamp: any;
@@ -20,12 +22,17 @@ type Message = {
 	uid: string;
 }
 
-export const ChatScreen = ({ navigation, route }: any) => {
-	const [message, setMessage] = useState('')
-	const [newMessageNotification, setMsgNoti] = useState(false)
+/**
+ * TODO: Implement loading and error for firestore loads
+ * @returns {JSX} 
+ */
+
+const ChatScreen = ({ navigation, route }: any) => {
+	const [userMessage, setUserMessage] = useState('')
 	const scrollRef = useRef(null)
-	const { chatId, chatName } = route.params
 	const { user } = useAuthUser()
+	const { chatId, chatName } = route.params
+
 	const ref = firestore.collection(`chats/${chatId}/messages`)
 	const [snapshots, loading, error] = useCollection(ref.orderBy('timestamp'))
 
@@ -35,13 +42,15 @@ export const ChatScreen = ({ navigation, route }: any) => {
 			headerAlignTitle: 'left',
 			headerBackTitleVisible: false,
 			headerTitle: () => (
-				<View style={tailwind('flex-row items-center')}>
-					<Avatar 
-						rounded
-						source={{ uri: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png' }}
-					/>
-					<Text style={tailwind('text-white ml-2 font-bold')}>{chatName}</Text>
-				</View>
+				<TouchableOpacity onPress={() => navigation.navigate('ChatSettings')}>
+					<View style={tailwind('flex-row items-center')}>
+						<Avatar 
+							rounded
+							source={{ uri: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png' }}
+						/>
+						<Text style={tailwind('text-white ml-2 font-bold')}>{chatName}</Text>
+					</View>
+				</TouchableOpacity>
 			),
 			headerRight: () => (
 				<View style={{
@@ -79,27 +88,21 @@ export const ChatScreen = ({ navigation, route }: any) => {
 		})
 	}, [])
 
-	useEffect(() => {
-		if(snapshots) return setMsgNoti(false)
-	}, [])
-
-	useEffect(() => {
-		const ref: any = scrollRef.current
-		setMsgNoti(true)
-		ref.scrollToEnd({ animated: true, duration: 300 });
-	}, [snapshots])
-
 	const handleMessageSend = async() => {
-		if(message === '') return 
+		if(userMessage === '') return 
 		Keyboard.dismiss()
-		setMessage('')
-		const newMessage = ref.add({
+		
+		const newMessage = {
 			displayName: user?.displayName,
 			timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-			text: message,
+			text: userMessage,
 			photoURL: user?.photoURL,
 			uid: user?.uid
-		})
+		}
+		
+		await ref.add(newMessage)
+
+		setUserMessage('')
 	}
 
 	return (
@@ -109,67 +112,52 @@ export const ChatScreen = ({ navigation, route }: any) => {
 			keyboardVerticalOffset={80}
 		>
 			<StatusBar style="light"/>
-			
 			<TouchableWithoutFeedback style={{ flex: 1, position: 'relative' }} onPress={Keyboard.dismiss}>
 				<>          
-					{newMessageNotification && (
-						<Text>NEW MESSAGE</Text>
-					)}
 					<ScrollView 
 						contentContainerStyle={{ paddingTop: 10 }}
 						ref={scrollRef}
-						onScrollEndDrag={() => setMsgNoti(false)}
 					>
 						{/* Chat */}
 						{snapshots?.docs.map((snapshot: any) => {
-							const { photoURL, text, timestamp, displayName, uid }: Message = snapshot.data()
+							const docId = snapshot.id
+							const data: Message = snapshot.data()
 
-							if(user?.uid === uid) return (
-								<View key={snapshot.id} style={styles.receiver}>
-									<Avatar 
-										source={{ uri: photoURL }}
-										rounded
-										containerStyle={{
-											position: 'absolute',
-											bottom: -15,
-											right: -15
-										}}
+							if(user?.uid === data.uid) {
+								//Messages from the user
+								return (
+									<ChatUser
+										key={docId}
+										{...data} 
 									/>
-									<Text style={styles.senderName}>{displayName}</Text>
-									<Text style={styles.receiverText}>{text}</Text>
-								</View>
-							)
-							
-							{/* From Sender */}
-							return (
-								<View key={snapshot.id} style={styles.sender}>
-									<Avatar 
-										source={{ uri: photoURL }}
-										rounded
-										containerStyle={{
-											position: 'absolute',
-											bottom: -15,
-											left: -5
-										}}
+								)
+							} else {
+								//Messages from others
+								return(
+									<ChatOther 
+										key={docId}
+										{...data}
 									/>
-									<Text style={styles.recieverName}>{displayName}</Text>
-									<Text style={styles.senderText}>{text}</Text>
-								</View>
-							)
+								)
+							}
 
 						})}
 					</ScrollView>
+					
 					<View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', padding: 15, marginBottom: 10 }}>
 						<TextInput 
 							placeholder="Enter Message Here"
 							placeholderTextColor="black"
-							onChangeText={(text: string) => setMessage(text)}
-							value={message}
+							onChangeText={(text: string) => setUserMessage(text)}
+							value={userMessage}
 							onSubmitEditing={handleMessageSend}
 							style={{ bottom: 0, height: 40, backgroundColor: '#ECECEC', flex: 1, marginRight: 15, padding: 10, borderRadius: 30 }}
 						/>
 
-						<TouchableOpacity onPress={handleMessageSend} activeOpacity={0.5}>
+						<TouchableOpacity 
+							onPress={handleMessageSend} 
+							activeOpacity={0.5}
+						>
 							<Ionicons 
 								name="send"
 								size={24}
@@ -183,6 +171,7 @@ export const ChatScreen = ({ navigation, route }: any) => {
 	)
 }
 
+export default ChatScreen
 
 const styles = StyleSheet.create({
 	receiver: {

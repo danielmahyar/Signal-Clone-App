@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { Platform, ScrollView, TouchableOpacity, View } from "react-native"
 import { SearchBar } from 'react-native-elements'
 import { SearchBarBaseProps } from 'react-native-elements/dist/searchbar/SearchBar';
@@ -9,14 +9,24 @@ import { auth } from '../firebase';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ChatList from '../components/ChatList';
 import { useAuthUser } from '../auth/auth-hook';
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { firestore } from '../firebase'
 
 // Using SearchBarBaseProps instead of SearchBarDefaultProps & SearchBarAndroidProps & SearchBarIOSProps
 const SafeSearchBar = (SearchBar as unknown) as React.FC<SearchBarBaseProps>;
 
-const HomeScreen = ({ navigation }: { navigation: any }) => {
+const HomeScreen = ({ navigation, route }: any) => {
 	const [search, setSearch] = useState("")
 	const { user } = useAuthUser()
+	const firestoreQuery = firestore.collection('chats').where('people', 'array-contains', user?.uid)
+	const [snapshots, loading, error ] = useCollection(firestoreQuery)
 	
+	useEffect(() => {
+		if(user === null){
+			
+		}
+	}, [])
+
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: `Welcome ${user?.displayName}`,
@@ -43,7 +53,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
 			),
 			headerRight: () => (
 				<View style={tailwind('flex flex-row items-center justify-between w-full mr-5')}>
-					<TouchableOpacity>
+					<TouchableOpacity onPress={() => navigation.navigate('ChatSettings')}>
 						<Icon 
 							name='camerao'
 							size={30}
@@ -59,6 +69,13 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
 			)
 		})
 	}, [])
+
+
+	useEffect(() => {
+		if(route.params){
+			navigation.navigate('Chat', {...route.params})
+		}
+	}, [route])
 
 	const handleSignOut = () => {
 		auth.signOut()
@@ -77,7 +94,12 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
 			</View>
 
 			<ScrollView>
-				<ChatList navigation={navigation}/>
+				<ChatList 
+					navigation={navigation} 
+					user={user}
+					search={search}
+					snapshots={snapshots}
+				/>
 			</ScrollView>
 		</SafeAreaProvider>
 	)

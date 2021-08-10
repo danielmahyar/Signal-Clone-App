@@ -22,10 +22,11 @@ function AddChatScreen({ navigation, route }: any) {
 		try {
 			const newChatData = {
 				name: chatName,
+				people: [userId],
 				created: firebase.firestore.FieldValue.serverTimestamp()
 			}
 			const newChat = await firestore.collection('chats').add(newChatData)			
-			navigation.navigate('Chat', { chatId: newChat.id, chatName })
+			navigation.replace('Home', { chatId: newChat.id, chatName })
 		} catch (error) {
 			console.error(error)
 		}

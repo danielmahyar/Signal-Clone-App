@@ -8,8 +8,10 @@ import HomeScreen from './screens/HomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoadingScreen from './screens/LoadingScreen';
 import AddChatScreen from './screens/AddChatScreen';
+import ChatScreen from './screens/ChatScreen';
+import ChatSettingScreen from './screens/ChatSettingScreen';
 import { useAuthUser } from './auth/auth-hook';
-import { ChatScreen } from './screens/ChatScreen';
+import AddUserToChat from './screens/AddUserToChat';
 
 const Stack = createStackNavigator()
 
@@ -36,6 +38,8 @@ export default function App() {
                 <Stack.Screen name="Home" component={HomeScreen}/>
                 <Stack.Screen name="AddChat" component={AddChatScreen}/>
                 <Stack.Screen name="Chat" component={ChatScreen}/>
+                <Stack.Screen name="ChatSettings" component={ChatSettingScreen}/>
+                <Stack.Screen name="AddUser" component={AddUserToChat}/>
               </>
               ) : (  
               <>
