@@ -4,9 +4,13 @@ import { ListItem } from 'react-native-elements'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
 import tailwind from 'tailwind-rn'
 import { useNavigation } from '@react-navigation/core'
+import { useCollection } from 'react-firebase-hooks/firestore'
+import { firestore } from '../firebase'
 
-const ChatList = ({ snapshots }: any) => {
+const ChatList = ({ user, search }: any) => {
 	const navigation = useNavigation()
+	const firestoreQuery = firestore.collection('chats').where('people', 'array-contains', user?.uid)
+	const [snapshots, loadingFirestore, error ] = useCollection(firestoreQuery)
 	return (
 		<>
 			{snapshots?.docs.map((chat: any) => {

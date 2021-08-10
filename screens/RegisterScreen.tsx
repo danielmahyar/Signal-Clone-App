@@ -15,15 +15,18 @@ const RegisterScreen = ({ navigation }: any) => {
 			const newUserFirestore = {
 				friends: []
 			}
-
+			
+			//!THE PROBLEM HERE. USER LOADS BEFORE IT CAN UPDATE DISPLAYNAME AND PHOTOURL
 			const newUser = await auth.createUserWithEmailAndPassword(email, password)
-			await firestore.collection(`users`).doc(newUser?.user?.uid).set(newUserFirestore)
-
 			await newUser.user?.updateProfile({
 				displayName: username,
 				photoURL: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png'
 			})
-			console.log("I am here")
+			
+			await firestore.collection(`users`).doc(newUser?.user?.uid).set(newUserFirestore)
+
+			const crediential: any = newUser.credential
+			await auth.signInWithEmailAndPassword(email, password)
 
 		} catch (error) {
 			console.log(error)

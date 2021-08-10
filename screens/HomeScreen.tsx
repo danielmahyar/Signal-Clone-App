@@ -9,24 +9,15 @@ import { auth } from '../firebase';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ChatList from '../components/ChatList';
 import { useAuthUser } from '../auth/auth-hook';
-import { useCollection } from 'react-firebase-hooks/firestore';
-import { firestore } from '../firebase'
 
 // Using SearchBarBaseProps instead of SearchBarDefaultProps & SearchBarAndroidProps & SearchBarIOSProps
 const SafeSearchBar = (SearchBar as unknown) as React.FC<SearchBarBaseProps>;
 
 const HomeScreen = ({ navigation, route }: any) => {
 	const [search, setSearch] = useState("")
-	const { user } = useAuthUser()
-	const firestoreQuery = firestore.collection('chats').where('people', 'array-contains', user?.uid)
-	const [snapshots, loading, error ] = useCollection(firestoreQuery)
-	
-	useEffect(() => {
-		if(user === null){
-			
-		}
-	}, [])
+	const { user, loading } = useAuthUser()
 
+	
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: `Welcome ${user?.displayName}`,
@@ -94,12 +85,13 @@ const HomeScreen = ({ navigation, route }: any) => {
 			</View>
 
 			<ScrollView>
-				<ChatList 
-					navigation={navigation} 
-					user={user}
-					search={search}
-					snapshots={snapshots}
-				/>
+				{user && !loading && (
+					<ChatList 
+						user={user}
+						search={search}
+					/>			
+				)}
+		
 			</ScrollView>
 		</SafeAreaProvider>
 	)
