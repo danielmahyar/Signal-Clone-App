@@ -1,39 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native"
 import { Button, Input, Text } from 'react-native-elements'
 import { Icon } from 'react-native-elements/dist/icons/Icon';
 import tailwind from 'tailwind-rn'
+import { AuthContext } from '../App';
+import { useAuthUser } from '../auth/auth-hook';
 import { auth, firestore } from '../firebase';
 
 const RegisterScreen = ({ navigation }: any) => {
 	const [username, setUsername] = useState("")
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
+	const { registerUser }: any = useContext(AuthContext)
 
-	const handleRegister = async () => {
-		try {
-			const newUserFirestore = {
-				friends: []
-			}
-			
-			//!THE PROBLEM HERE. USER LOADS BEFORE IT CAN UPDATE DISPLAYNAME AND PHOTOURL
-			const newUser = await auth.createUserWithEmailAndPassword(email, password)
-			await newUser.user?.updateProfile({
-				displayName: username,
-				photoURL: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png'
-			})
-			
-			await firestore.collection(`users`).doc(newUser?.user?.uid).set(newUserFirestore)
+	const handleRegister = () => {
 
-			const crediential: any = newUser.credential
-			await auth.signInWithEmailAndPassword(email, password)
-
-		} catch (error) {
-			console.log(error)
+		const profileData = {
+			displayName: username,
+			photoURL: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'
 		}
+
+		registerUser(email, password, profileData)
 		
 	}
-
+	
+	// ! 
 
 	return (
 		<KeyboardAvoidingView style={styles.container} behavior={'padding'} onTouchStart={() => Keyboard.dismiss()}>
