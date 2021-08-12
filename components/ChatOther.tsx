@@ -6,7 +6,7 @@ import { Message } from '../screens/ChatScreen'
 
 const ChatOther = ({ photoURL, displayName, text }: Message) => {
 	return (
-		<TouchableOpacity>
+		<View style={styles.container}>
 			<View style={styles.sender}>
 				<Avatar 
 					source={{ uri: photoURL }}
@@ -14,31 +14,37 @@ const ChatOther = ({ photoURL, displayName, text }: Message) => {
 					containerStyle={{
 						position: 'absolute',
 						bottom: -15,
-						left: -5
+						left: -5,
+						zIndex: 5
 					}}
 				/>
 				<Text style={styles.senderName}>{displayName}</Text>
-				<Text style={styles.senderText}>{text}</Text>
+				<TouchableOpacity style={styles.textContainer}>
+					<Text style={styles.senderText}>{text}</Text>
+				</TouchableOpacity>
 			</View>
-		</TouchableOpacity>
-
+		</View>
 	)
 }
 
 export default ChatOther
 
 const styles = StyleSheet.create({
-	sender: {
-		padding: 15,
-		backgroundColor: "#2B68E6",
+	container: {
 		alignSelf: 'flex-start',
-		borderRadius: 20,
 		margin: 15,
 		maxWidth: "70%",
+	},
+	textContainer: {
+		padding: 15,
+		backgroundColor: "#2B68E6",
+		borderRadius: 20,
+	},
+	sender: {
 		position: "relative"
 	},
 	senderText: {
-		fontWeight: 'bold',
+		fontWeight: '500',
 		color: "white",
 		marginLeft: 10,
 	},
@@ -46,7 +52,7 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		top: -18,
 		fontSize: 10,
-		right: 10,
+		left: 15,
 		padding: 5,
 	},
 })

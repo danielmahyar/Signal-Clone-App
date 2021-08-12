@@ -12,7 +12,7 @@ import ChatScreen from './screens/ChatScreen';
 import ChatSettingScreen from './screens/ChatSettingScreen';
 import { AuthContext } from './auth/auth-context';
 import AddUserToChat from './screens/AddUserToChat';
-import { auth } from './firebase';
+import { auth, firestore } from './firebase';
 import useAuthRedux, { REDUCER_ACTIONS } from './auth/auth-redux';
 
 
@@ -21,6 +21,7 @@ const Stack = createStackNavigator()
 export default function App() {
   const { user, userState, dispatchUser, loading } = useAuthRedux()
 
+  // ! Contains state management for user including the user itself
   const authContextValue = useMemo(() => ({
       signIn: async (email: string, password: string) => {
         try {
@@ -38,6 +39,7 @@ export default function App() {
         try {
           const newUser = await auth.createUserWithEmailAndPassword(email, password)
           await newUser.user?.updateProfile(profileData)
+          await firestore.collection('users').add({ friends: [] })
 
           if(user){
             dispatchUser({ type: REDUCER_ACTIONS.SIGN_IN })

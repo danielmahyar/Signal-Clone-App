@@ -8,6 +8,8 @@ import tailwind from 'tailwind-rn';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ChatList from '../components/ChatList';
 import { AuthContext } from '../auth/auth-context';
+import { firestore } from '../firebase';
+import { useCollection } from 'react-firebase-hooks/firestore';
 
 
 //// IMPLENT OWN REDUCER FUNCTION TO MANAGE USER STATE
@@ -20,12 +22,12 @@ const SafeSearchBar = (SearchBar as unknown) as React.FC<SearchBarBaseProps>;
 const HomeScreen = ({ navigation, route }: any) => {
 	const { signOut, user }: any = useContext(AuthContext)
 	const [search, setSearch] = useState<string>("")
-	
+	const firestoreQuery = (user) ? firestore.collection('chats').where('people', 'array-contains', user?.uid) : null
+	const [snapshots, loadingFirestore, error ] = useCollection(firestoreQuery)
+
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			headerTitle: () => (
-				<Text>{user?.displayName}</Text>
-			),
+			title: user?.displayName,
 			headerStyle: {
 				backgroundColor: 'transparent'
 			},
@@ -90,10 +92,11 @@ const HomeScreen = ({ navigation, route }: any) => {
 			</View>
 
 			<ScrollView>
-				{user && (
+				{user && !loadingFirestore && (
 					<ChatList 
 						user={user}
 						search={search}
+						snapshots={snapshots}
 					/>			
 				)}
 		

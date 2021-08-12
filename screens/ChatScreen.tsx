@@ -35,21 +35,25 @@ const ChatScreen = ({ navigation, route }: any) => {
 	const ref = firestore.collection(`chats/${chatId}/messages`)
 	const [snapshots, loading, error] = useCollection(ref.orderBy('timestamp'))
 
+	console.log(snapshots?.docs[0].data())
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: 'Chat',
 			headerAlignTitle: 'left',
 			headerBackTitleVisible: false,
 			headerTitle: () => (
-				<TouchableOpacity onPress={() => navigation.navigate('ChatSettings')}>
-					<View style={tailwind('flex-row items-center')}>
-						<Avatar 
-							rounded
-							source={{ uri: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png' }}
-						/>
-						<Text style={tailwind('text-white ml-2 font-bold')}>{chatName}</Text>
-					</View>
-				</TouchableOpacity>
+				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+					<TouchableOpacity onPress={() => navigation.navigate('ChatSettings')}>
+						<View style={tailwind('flex-row items-center')}>
+							<Avatar 
+								rounded
+								source={{ uri: (snapshots?.docs) ? snapshots?.docs[0].data().photoURL : 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png' }}
+							/>
+							<Text style={tailwind('text-white ml-2 font-bold')}>{chatName}</Text>
+						</View>
+					</TouchableOpacity>
+				</View>
+
 			),
 			headerRight: () => (
 				<View style={{
@@ -85,7 +89,7 @@ const ChatScreen = ({ navigation, route }: any) => {
 				</TouchableOpacity>
 			)
 		})
-	}, [])
+	}, [snapshots])
 
 	const handleMessageSend = async() => {
 		if(userMessage === '') return 
@@ -114,7 +118,7 @@ const ChatScreen = ({ navigation, route }: any) => {
 			<TouchableWithoutFeedback style={{ flex: 1, position: 'relative' }} onPress={Keyboard.dismiss}>
 				<>          
 					<ScrollView 
-						contentContainerStyle={{ paddingTop: 10 }}
+						contentContainerStyle={{ marginTop: 20 }}
 						ref={scrollRef}
 					>
 						{/* Chat */}
@@ -171,47 +175,3 @@ const ChatScreen = ({ navigation, route }: any) => {
 }
 
 export default ChatScreen
-
-const styles = StyleSheet.create({
-	receiver: {
-		padding: 15,
-		backgroundColor: "#ECECEC",
-		alignSelf: 'flex-end',
-		borderRadius: 20,
-		marginRight: 20,
-		marginBottom: 30,
-		maxWidth: "70%",
-		position: "relative"
-	},
-	sender: {
-		padding: 15,
-		backgroundColor: "#2B68E6",
-		alignSelf: 'flex-start',
-		borderRadius: 20,
-		margin: 15,
-		maxWidth: "70%",
-		position: "relative"
-	},
-	receiverText: {
-		fontWeight: 'bold'
-	},
-	senderText: {
-		fontWeight: 'bold',
-		color: "white",
-		marginLeft: 10,
-	},
-	senderName: {
-		position: 'absolute',
-		top: -18,
-		fontSize: 10,
-		right: 10,
-		padding: 5,
-	},
-	recieverName: {
-		position: 'absolute',
-		top: -18,
-		fontSize: 10,
-		right: 10,
-		padding: 5,
-	}
-})

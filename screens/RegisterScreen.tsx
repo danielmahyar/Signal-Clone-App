@@ -1,8 +1,9 @@
+import { ParamListBase, useNavigation } from '@react-navigation/native';
 import React, { useState, useContext } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native"
 import { Button, Input, Text } from 'react-native-elements'
 import { Icon } from 'react-native-elements/dist/icons/Icon';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import tailwind from 'tailwind-rn'
 import { AuthContext } from '../auth/auth-context';
 
@@ -25,7 +26,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
 	return (
 		<KeyboardAvoidingView style={styles.container} behavior={'padding'}>
-			<TouchableOpacity onPress={Keyboard.dismiss}>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 				<View style={tailwind('')} >
 					<Text style={tailwind('text-center')} h3>Create your Signal Account</Text>
 					<View style={tailwind('flex w-80 items-center justify-center mt-10 rounded-lg')}>
@@ -92,7 +93,7 @@ const RegisterScreen = ({ navigation }: any) => {
 						onPress={navigation.goBack}
 					/>
 				</View>
-			</TouchableOpacity>
+			</TouchableWithoutFeedback>
 			<View style={{ height: 150 }}></View>
 		</KeyboardAvoidingView>
 	)

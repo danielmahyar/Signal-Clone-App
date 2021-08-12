@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
 import { Message } from '../screens/ChatScreen'
 
@@ -12,11 +12,14 @@ const ChatUser = ({ photoURL, displayName, text }: Message) => {
 				containerStyle={{
 					position: 'absolute',
 					bottom: -15,
-					right: -15
+					right: -15,
+					zIndex: 5
 				}}
 			/>
 			<Text style={styles.recieverName}>{displayName}</Text>
-			<Text style={styles.receiverText}>{text}</Text>
+			<TouchableOpacity style={styles.textContainer}>
+				<Text style={styles.receiverText}>{text}</Text>
+			</TouchableOpacity>
 		</View>	
 	)
 }
@@ -25,17 +28,19 @@ export default ChatUser
 
 const styles = StyleSheet.create({
 	receiver: {
-		padding: 15,
-		backgroundColor: "#ECECEC",
 		alignSelf: 'flex-end',
-		borderRadius: 20,
 		marginRight: 20,
 		marginBottom: 30,
 		maxWidth: "70%",
 		position: "relative"
 	},
+	textContainer: {
+		backgroundColor: "#ECECEC",
+		borderRadius: 20,
+		padding: 15,
+	},
 	receiverText: {
-		fontWeight: 'bold'
+		fontWeight: '300'
 	},
 	recieverName: {
 		position: 'absolute',
