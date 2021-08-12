@@ -3,12 +3,13 @@ import { Image, Input,  Button } from 'react-native-elements';
 import React, { useContext, useLayoutEffect, useState } from 'react';
 import {  Keyboard, KeyboardAvoidingView, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native"
 import tailwind from 'tailwind-rn';
-import { auth } from '../firebase';
+import { AuthContext } from '../auth/auth-context';
 
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
+	const { signIn }: any = useContext(AuthContext)
 	const [error, setError] = useState(false)
 
 	useLayoutEffect(() => {
@@ -16,17 +17,13 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 
 	}, [])
 
-	const handleLogin = async () => {
-		try{
-			const user = await auth.signInWithEmailAndPassword(email, password)
-		} catch (error) {
-			setError(true)
-		}
-
+	const handleLogin = () => {
+		signIn(email, password)
 	}
 
+
 	return (
-		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+		<TouchableWithoutFeedback>
 			<KeyboardAvoidingView behavior="padding" style={styles.container}>
 					<Image 
 						source={{
@@ -57,9 +54,9 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 						textContentType="password"
 						leftIcon={
 							<Icon
-							name='lock'
-							size={24}
-							color='black'
+								name='lock'
+								size={24}
+								color='black'
 							/>
 						}
 						value={password}

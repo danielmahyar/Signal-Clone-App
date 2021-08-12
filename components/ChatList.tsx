@@ -2,17 +2,18 @@ import React, { useEffect } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { ListItem } from 'react-native-elements'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
-import { useCollectionOnce } from 'react-firebase-hooks/firestore'
 import tailwind from 'tailwind-rn'
+import { useNavigation } from '@react-navigation/core'
+import { useCollection } from 'react-firebase-hooks/firestore'
 import { firestore } from '../firebase'
 
-const firestoreQuery = firestore.collection('chats')
-
-const ChatList = ({ navigation }: any) => {
-	const [snapshots, loading, error ] = useCollectionOnce(firestoreQuery)
+const ChatList = ({ user, search }: any) => {
+	const navigation = useNavigation()
+	const firestoreQuery = firestore.collection('chats').where('people', 'array-contains', user?.uid)
+	const [snapshots, loadingFirestore, error ] = useCollection(firestoreQuery)
 	return (
 		<>
-			{snapshots?.docs.map((chat) => {
+			{snapshots?.docs.map((chat: any) => {
 				const { name } = chat.data()
 				return (
 					<TouchableOpacity key={chat.id} onPress={() => navigation.navigate('Chat', { chatId: chat.id, chatName: name })}>

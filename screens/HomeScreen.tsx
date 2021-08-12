@@ -1,25 +1,31 @@
-import React, { useContext, useLayoutEffect, useState } from 'react';
-import { Platform, ScrollView, TouchableOpacity, View } from "react-native"
+import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { Platform, ScrollView, TouchableOpacity, View, Text } from "react-native"
 import { SearchBar } from 'react-native-elements'
 import { SearchBarBaseProps } from 'react-native-elements/dist/searchbar/SearchBar';
 import Icon  from '@expo/vector-icons/AntDesign'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar';
 import tailwind from 'tailwind-rn';
-import { auth } from '../firebase';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ChatList from '../components/ChatList';
-import { useAuthUser } from '../auth/auth-hook';
+import { AuthContext } from '../auth/auth-context';
+
+
+//// IMPLENT OWN REDUCER FUNCTION TO MANAGE USER STATE
+//// TO SEE THE REFERENCE. https://reactnavigation.org/docs/auth-flow/
+//// TL;DR: MAKE REDUCER FUNCTION WHICH MANAGAES SIGNIN, SIGNUP AND LOADING
 
 // Using SearchBarBaseProps instead of SearchBarDefaultProps & SearchBarAndroidProps & SearchBarIOSProps
 const SafeSearchBar = (SearchBar as unknown) as React.FC<SearchBarBaseProps>;
 
-const HomeScreen = ({ navigation }: { navigation: any }) => {
-	const [search, setSearch] = useState("")
-	const { user } = useAuthUser()
+const HomeScreen = ({ navigation, route }: any) => {
+	const { signOut, user }: any = useContext(AuthContext)
+	const [search, setSearch] = useState<string>("")
 	
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			title: `Welcome ${user?.displayName}`,
+			headerTitle: () => (
+				<Text>{user?.displayName}</Text>
+			),
 			headerStyle: {
 				backgroundColor: 'transparent'
 			},
@@ -35,7 +41,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
 							rounded
 							size={35}
 							source={{
-								uri: user?.photoURL || ''
+								uri: user?.photoURL
 							}}
 						/>
 					</TouchableOpacity>
@@ -58,10 +64,17 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
 				</View>
 			)
 		})
-	}, [])
+
+	}, [user])
+
+	useEffect(() => {
+		if(route.params){
+			navigation.navigate('Chat', {...route.params})
+		}
+	}, [route])
 
 	const handleSignOut = () => {
-		auth.signOut()
+		signOut()
 	}
 
 	return (
@@ -77,7 +90,13 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
 			</View>
 
 			<ScrollView>
-				<ChatList navigation={navigation}/>
+				{user && (
+					<ChatList 
+						user={user}
+						search={search}
+					/>			
+				)}
+		
 			</ScrollView>
 		</SafeAreaProvider>
 	)
