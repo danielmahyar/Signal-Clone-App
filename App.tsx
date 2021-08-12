@@ -13,6 +13,7 @@ import ChatSettingScreen from './screens/ChatSettingScreen';
 import { useAuthUser } from './auth/auth-hook';
 import AddUserToChat from './screens/AddUserToChat';
 import { auth } from './firebase';
+import useAuthRedux from './auth/auth-redux';
 
 const ACTIONS = {
   SIGN_IN: 'signin',
@@ -22,66 +23,16 @@ const ACTIONS = {
 
 export const AuthContext = React.createContext({})
 
-const reducer = (prevState: any, action: any) => {
-  switch (action.type) {
-    case ACTIONS.SIGN_IN:
-      console.log(action.payload.user)
-      return {
-        ...prevState,
-        isSignedOut: false,
-        user: action.payload.user
-      }
-
-    case ACTIONS.SIGN_OUT:
-      return {
-        ...prevState,
-        isSignedOut: true,
-      }
-
-    case ACTIONS.CURRENT_USER_EXITS:
-      return {
-        ...prevState,
-        isSignedOut: false,
-        loading: false
-      }
-      
-    default: 
-      throw new Error()
-  }
-}
-
-const initialUserState = {
-  loading: true,
-  isSignedOut: true,
-  user: null
-}
-
-
 const Stack = createStackNavigator()
 
 export default function App() {
-  const {user, loading, error} = useAuthUser()
+  const { user, userState, dispatchUser, loading } = useAuthRedux()
 
-  const [userState, dispatchUser] = useReducer(reducer, initialUserState)
-
-  useEffect(() => {
-
-    // ! NORMALLY THIS SECTION WILL BE ASYNC
-    // ! IN THAT CASE WRAP THIS PART IN A FUNCTION CALLED ASYNC
-
-    if (user) { dispatchUser({ type: ACTIONS.CURRENT_USER_EXITS }) }
-  }, [user])
-
-  const authContext = useMemo(() => ({
-      getUserInfo: () => {
-        if(user){
-          return user
-        }
-      },
+  const authContextValue = useMemo(() => ({
       signIn: async (email: string, password: string) => {
         try {
           const loggedInUser = await auth.signInWithEmailAndPassword(email, password)
-          dispatchUser({ type: ACTIONS.SIGN_IN, payload: { user: loggedInUser?.user } })
+          dispatchUser({ type: ACTIONS.SIGN_IN })
         } catch (error) {
           
         }
@@ -95,7 +46,7 @@ export default function App() {
           const newUser = await auth.createUserWithEmailAndPassword(email, password)
           await newUser.user?.updateProfile(profileData)
 
-          dispatchUser({ type: ACTIONS.SIGN_IN, payload: { user: newUser?.user } })
+          dispatchUser({ type: ACTIONS.SIGN_IN })
         } catch (error) {
           console.error(error)
         }
@@ -104,10 +55,6 @@ export default function App() {
     , []
   )
 
-
-  
-
-
   const globalScreenOptions = {
     headerStyle: { backgroundColor: '#2C6BED' },
     headerTitleStyle: { color: 'white' },
@@ -115,7 +62,7 @@ export default function App() {
   }
 
   return (
-    <AuthContext.Provider value={authContext}>
+    <AuthContext.Provider value={authContextValue}>
       <NavigationContainer>
         <StatusBar style="auto"/>
           <Stack.Navigator screenOptions={globalScreenOptions}>

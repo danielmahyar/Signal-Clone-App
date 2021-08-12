@@ -27,59 +27,51 @@ const HomeScreen = ({ navigation, route }: any) => {
 	const [user, loading, error] = useAuthState(auth)
 	const [search, setSearch] = useState<string>("")
 	
-	const title = "Welcome " + user?.displayName
-
-	//// if(user?.displayName === null) {
-	//// 	console.log("Test")
-	//////user?.reload()
-		
-	//// }
+	
 	// ! PROBLEM HERE
-	useEffect(() => {
-		console.log(user)
-		console.log(user?.displayName)
-			navigation.setOptions({
-				headerTitle: () => (
-					<Text>{user?.displayName}</Text>
-				),
-				headerStyle: {
-					backgroundColor: 'transparent'
-				},
-				headerTitleStyle: {
-					textAlign: 'center',
-					color: 'black'
-				},
-				headerLeft: () => (
-					<View style={tailwind('flex justify-center items-center ml-5')}>
-						<TouchableOpacity onPress={handleSignOut}>
-							<Avatar
-								titleStyle={tailwind('font-bold')}
-								rounded
-								size={35}
-								source={{
-									uri: user?.photoURL || ''
-								}}
-							/>
-						</TouchableOpacity>
-					</View>
-				),
-				headerRight: () => (
-					<View style={tailwind('flex flex-row items-center justify-between w-full mr-5')}>
-						<TouchableOpacity onPress={() => navigation.navigate('ChatSettings')}>
-							<Icon 
-								name='camerao'
-								size={30}
-							/>
-						</TouchableOpacity>
-						<TouchableOpacity onPress={() => navigation.navigate('AddChat', { userId: user?.uid, username: user?.displayName })}>
-							<Icon 
-								name="message1"
-								size={30}
-							/>
-						</TouchableOpacity>
-					</View>
-				)
-			})
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerTitle: () => (
+				<Text>{user?.displayName}</Text>
+			),
+			headerStyle: {
+				backgroundColor: 'transparent'
+			},
+			headerTitleStyle: {
+				textAlign: 'center',
+				color: 'black'
+			},
+			headerLeft: () => (
+				<View style={tailwind('flex justify-center items-center ml-5')}>
+					<TouchableOpacity onPress={handleSignOut}>
+						<Avatar
+							titleStyle={tailwind('font-bold')}
+							rounded
+							size={35}
+							source={{
+								uri: user?.photoURL || ''
+							}}
+						/>
+					</TouchableOpacity>
+				</View>
+			),
+			headerRight: () => (
+				<View style={tailwind('flex flex-row items-center justify-between w-full mr-5')}>
+					<TouchableOpacity onPress={() => navigation.navigate('ChatSettings')}>
+						<Icon 
+							name='camerao'
+							size={30}
+						/>
+					</TouchableOpacity>
+					<TouchableOpacity onPress={() => navigation.navigate('AddChat', { userId: user?.uid, username: user?.displayName })}>
+						<Icon 
+							name="message1"
+							size={30}
+						/>
+					</TouchableOpacity>
+				</View>
+			)
+		})
 
 	}, [user])
 
