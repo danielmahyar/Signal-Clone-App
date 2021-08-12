@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Keyboard, KeyboardAvoidingView, LayoutChangeEvent, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, _ScrollView } from 'react-native'
 import { Text, Input, Button } from 'react-native-elements'
 import { useCollection } from 'react-firebase-hooks/firestore'
@@ -8,9 +8,10 @@ import firebase from 'firebase'
 import { AntDesign, FontAwesome, Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
-import { useAuthUser } from '../auth/auth-hook'
 import ChatUser from '../components/ChatUser'
 import ChatOther from '../components/ChatOther'
+import useAuthRedux from '../auth/auth-redux'
+import { AuthContext } from '../auth/auth-context'
 
 export type Message = {
 	photoURL: string;
@@ -28,7 +29,7 @@ export type Message = {
 const ChatScreen = ({ navigation, route }: any) => {
 	const [userMessage, setUserMessage] = useState('')
 	const scrollRef = useRef(null)
-	const { user } = useAuthUser()
+	const { user } = useContext(AuthContext)
 	const { chatId, chatName } = route.params
 
 	const ref = firestore.collection(`chats/${chatId}/messages`)

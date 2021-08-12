@@ -2,10 +2,9 @@ import React, { useState, useContext } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native"
 import { Button, Input, Text } from 'react-native-elements'
 import { Icon } from 'react-native-elements/dist/icons/Icon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import tailwind from 'tailwind-rn'
-import { AuthContext } from '../App';
-import { useAuthUser } from '../auth/auth-hook';
-import { auth, firestore } from '../firebase';
+import { AuthContext } from '../auth/auth-context';
 
 const RegisterScreen = ({ navigation }: any) => {
 	const [username, setUsername] = useState("")
@@ -23,77 +22,77 @@ const RegisterScreen = ({ navigation }: any) => {
 		registerUser(email, password, profileData)
 		
 	}
-	
-	// ! 
 
 	return (
-		<KeyboardAvoidingView style={styles.container} behavior={'padding'} onTouchStart={() => Keyboard.dismiss()}>
-			<View style={tailwind('')} >
-				<Text style={tailwind('text-center')} h3>Create your Signal Account</Text>
-				<View style={tailwind('flex w-80 items-center justify-center mt-10 rounded-lg')}>
-					<Input 
-						placeholder="Enter your username"
-						leftIcon={
-							<Icon
-								name='person'
-								size={24}
-								color='black'
-							/>
-						}
-						onChangeText={(text: string) => setUsername(text)}
-						value={username}
+		<KeyboardAvoidingView style={styles.container} behavior={'padding'}>
+			<TouchableOpacity onPress={Keyboard.dismiss}>
+				<View style={tailwind('')} >
+					<Text style={tailwind('text-center')} h3>Create your Signal Account</Text>
+					<View style={tailwind('flex w-80 items-center justify-center mt-10 rounded-lg')}>
+						<Input 
+							placeholder="Enter your username"
+							leftIcon={
+								<Icon
+									name='person'
+									size={24}
+									color='black'
+								/>
+							}
+							onChangeText={(text: string) => setUsername(text)}
+							value={username}
+						/>
+						<Input 
+							placeholder="Enter your email"
+							textContentType="emailAddress"
+							leftIcon={
+								<Icon
+									name='mail'
+									size={24}
+									color='black'
+								/>
+							}
+							onChangeText={(text: string) => setEmail(text)}
+							value={email}
+						/>
+						<Input 
+							placeholder="Enter your password"
+							textContentType="newPassword"
+							secureTextEntry
+							leftIcon={
+								<Icon
+									name='lock'
+									size={24}
+									color='black'
+								/>
+							}
+							onChangeText={(text: string) => setPassword(text)}
+							value={password}
+							onSubmitEditing={handleRegister}
+						/>
+					</View>
+					<Button 
+						title="Register Now"
+						raised={true}
+						containerStyle={tailwind('mt-5')}
+						buttonStyle={tailwind('h-12')}
+						onPress={handleRegister}
 					/>
-					<Input 
-						placeholder="Enter your email"
-						textContentType="emailAddress"
-						leftIcon={
+					<Button 
+						title="Go Back"
+						type="outline"
+						containerStyle={tailwind('mt-5')}
+						buttonStyle={tailwind('h-10')}
+						icon={
 							<Icon
-								name='mail'
-								size={24}
-								color='black'
+							name="arrow-left"
+							size={25}
+							color="black"
 							/>
 						}
-						onChangeText={(text: string) => setEmail(text)}
-						value={email}
-					/>
-					<Input 
-						placeholder="Enter your password"
-						textContentType="newPassword"
-						secureTextEntry
-						leftIcon={
-							<Icon
-								name='lock'
-								size={24}
-								color='black'
-							/>
-						}
-						onChangeText={(text: string) => setPassword(text)}
-						value={password}
-						onSubmitEditing={handleRegister}
+						onPress={navigation.goBack}
 					/>
 				</View>
-				<Button 
-					title="Register Now"
-					raised={true}
-					containerStyle={tailwind('mt-5')}
-					buttonStyle={tailwind('h-12')}
-					onPress={handleRegister}
-				/>
-				<Button 
-					title="Go Back"
-					type="outline"
-					containerStyle={tailwind('mt-5')}
-					buttonStyle={tailwind('h-10')}
-					icon={
-						<Icon
-						  name="arrow-left"
-						  size={25}
-						  color="black"
-						/>
-					}
-					onPress={navigation.goBack}
-				/>
-			</View>
+			</TouchableOpacity>
 			<View style={{ height: 150 }}></View>
 		</KeyboardAvoidingView>
 	)

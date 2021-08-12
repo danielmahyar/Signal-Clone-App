@@ -3,8 +3,7 @@ import { Image, Input,  Button } from 'react-native-elements';
 import React, { useContext, useLayoutEffect, useState } from 'react';
 import {  Keyboard, KeyboardAvoidingView, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native"
 import tailwind from 'tailwind-rn';
-import { auth } from '../firebase';
-import { AuthContext } from '../App';
+import { AuthContext } from '../auth/auth-context';
 
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
@@ -21,6 +20,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 	const handleLogin = () => {
 		signIn(email, password)
 	}
+
 
 	return (
 		<TouchableWithoutFeedback>
@@ -54,9 +54,9 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 						textContentType="password"
 						leftIcon={
 							<Icon
-							name='lock'
-							size={24}
-							color='black'
+								name='lock'
+								size={24}
+								color='black'
 							/>
 						}
 						value={password}

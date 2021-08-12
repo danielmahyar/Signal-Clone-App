@@ -10,18 +10,11 @@ import LoadingScreen from './screens/LoadingScreen';
 import AddChatScreen from './screens/AddChatScreen';
 import ChatScreen from './screens/ChatScreen';
 import ChatSettingScreen from './screens/ChatSettingScreen';
-import { useAuthUser } from './auth/auth-hook';
+import { AuthContext } from './auth/auth-context';
 import AddUserToChat from './screens/AddUserToChat';
 import { auth } from './firebase';
-import useAuthRedux from './auth/auth-redux';
+import useAuthRedux, { REDUCER_ACTIONS } from './auth/auth-redux';
 
-const ACTIONS = {
-  SIGN_IN: 'signin',
-  SIGN_OUT: 'signout',
-  CURRENT_USER_EXITS: 'currentUser'
-}
-
-export const AuthContext = React.createContext({})
 
 const Stack = createStackNavigator()
 
@@ -31,28 +24,31 @@ export default function App() {
   const authContextValue = useMemo(() => ({
       signIn: async (email: string, password: string) => {
         try {
-          const loggedInUser = await auth.signInWithEmailAndPassword(email, password)
-          dispatchUser({ type: ACTIONS.SIGN_IN })
+          await auth.signInWithEmailAndPassword(email, password)
+          dispatchUser({ type: REDUCER_ACTIONS.SIGN_IN })
         } catch (error) {
-          
+          console.log(error)
         }
       },
       signOut: async() => {
         await auth.signOut()
-        dispatchUser({ type: ACTIONS.SIGN_OUT })
+        dispatchUser({ type: REDUCER_ACTIONS.SIGN_OUT })
       },
       registerUser: async (email: string, password: string, profileData: any) => {
         try {
           const newUser = await auth.createUserWithEmailAndPassword(email, password)
           await newUser.user?.updateProfile(profileData)
 
-          dispatchUser({ type: ACTIONS.SIGN_IN })
+          if(user){
+            dispatchUser({ type: REDUCER_ACTIONS.SIGN_IN })
+          }
         } catch (error) {
           console.error(error)
         }
-      }
+      },
+      user
     })
-    , []
+    , [user]
   )
 
   const globalScreenOptions = {
