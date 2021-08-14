@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigation } from '@react-navigation/core'
-import { useCollection } from 'react-firebase-hooks/firestore'
-import { firestore } from '../firebase'
 import ChatListItem from './ChatListItem'
 
-const ChatList = ({ user, search, snapshots }: any) => {
+const ChatList = ({ search, snapshots }: any) => {
 	const navigation = useNavigation()
 	const filteredSearch: any[] = (snapshots?.docs) ? snapshots?.docs.filter((n:any) => n.data().name.toLowerCase().includes(search.toLowerCase())) : []
 	return (

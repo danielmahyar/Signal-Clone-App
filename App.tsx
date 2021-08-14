@@ -12,63 +12,33 @@ import ChatScreen from './screens/ChatScreen';
 import ChatSettingScreen from './screens/ChatSettingScreen';
 import { AuthContext } from './auth/auth-context';
 import AddUserToChat from './screens/AddUserToChat';
-import { auth, firestore } from './firebase';
-import useAuthRedux, { REDUCER_ACTIONS } from './auth/auth-redux';
+import { auth } from './firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 
 const Stack = createStackNavigator()
 
 export default function App() {
-  const { user, userState, dispatchUser, loading } = useAuthRedux()
-
-  // ! Contains state management for user including the user itself
-  const authContextValue = useMemo(() => ({
-      signIn: async (email: string, password: string) => {
-        try {
-          await auth.signInWithEmailAndPassword(email, password)
-          dispatchUser({ type: REDUCER_ACTIONS.SIGN_IN })
-        } catch (error) {
-          console.log(error)
-        }
-      },
-      signOut: async() => {
-        await auth.signOut()
-        dispatchUser({ type: REDUCER_ACTIONS.SIGN_OUT })
-      },
-      registerUser: async (email: string, password: string, profileData: any) => {
-        try {
-          const newUser = await auth.createUserWithEmailAndPassword(email, password)
-          await newUser.user?.updateProfile(profileData)
-          await firestore.collection('users').add({ friends: [] })
-
-          if(user){
-            dispatchUser({ type: REDUCER_ACTIONS.SIGN_IN })
-          }
-        } catch (error) {
-          console.error(error)
-        }
-      },
-      user
-    })
-    , [user]
-  )
+  const [user, userLoading, userError] = useAuthState(auth)
 
   const globalScreenOptions = {
     headerStyle: { backgroundColor: '#2C6BED' },
     headerTitleStyle: { color: 'white' },
-    headerTintColor: 'white'
+    headerTintColor: 'white',
   }
 
+  const AuthContextValues = {user, userLoading, userError}
+
   return (
-    <AuthContext.Provider value={authContextValue}>
+    <AuthContext.Provider value={AuthContextValues}>
       <NavigationContainer>
         <StatusBar style="auto"/>
           <Stack.Navigator screenOptions={globalScreenOptions}>
-            {loading && !user && (
+            {userLoading && !user && (
               <Stack.Screen name="Loading" component={LoadingScreen} />
             )}
             
-            {!userState.isSignedOut ? (
+            {user ? (
               <>
                 {/* When user are logged in */}
                 <Stack.Screen name="Home" component={HomeScreen}/>
@@ -86,5 +56,6 @@ export default function App() {
           </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>
+
   )
 }
