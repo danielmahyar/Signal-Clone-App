@@ -14,7 +14,7 @@ const ChatSettingScreen = ({ navigation, route }: any) => {
 			listItems: [
 				{
 					iconName: 'adduser',
-					title: 'Add User to the Chat',
+					title: 'Add an User to the Chat',
 					nav: 'AddUser'
 				}
 			]
@@ -39,12 +39,13 @@ const ChatSettingScreen = ({ navigation, route }: any) => {
 						size={100}
 						rounded
 					/>
-					<Text h2>Test</Text>
-					<View>
+					<Text h2>{route.params.chatName}</Text>
+					<TouchableOpacity onPress={() => navigation.navigate('AddUser')}>
 						<AntDesign 
 							name="adduser"
+							size={30}
 						/>
-					</View>
+					</TouchableOpacity>
 				</View>
 				<ScrollView style={{ flex: 1 }}>
 

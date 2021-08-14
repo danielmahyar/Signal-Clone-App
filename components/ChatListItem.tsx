@@ -24,7 +24,7 @@ const ChatListItem = ({ navigation, chatName, chatId }: any) => {
 		<>
 			{dataState && (
 				<TouchableOpacity onPress={() => navigation.navigate('Chat', { chatId, chatName })}>
-					<ListItem topDivider>
+					<ListItem bottomDivider>
 						<Avatar 
 							rounded
 							source={{
