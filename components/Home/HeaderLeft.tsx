@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar';
 import tailwind from 'tailwind-rn';
 
-const HeaderLeft = ({ handleSignOut, uri }: any) => {
+const HeaderLeft = ({ handlePress, uri }: any) => {
 	return (
 		<View style={tailwind('flex justify-center items-center ml-5')}>
-			<TouchableOpacity onPress={handleSignOut}>
+			<TouchableOpacity onPress={handlePress}>
 				<Avatar
 					titleStyle={tailwind('font-bold')}
 					rounded

@@ -6,18 +6,11 @@ import ChatList from '../components/ChatList';
 import { AuthContext } from '../auth/auth-context';
 import { firestore } from '../firebase';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { logOut } from '../auth/auth-functions';
 import HeaderLeft from '../components/Home/HeaderLeft';
 import HeaderRight from '../components/Home/HeaderRight';
 import HeaderTitle from '../components/Home/HeaderTitle';
 import Loading from '../components/Loading';
 import { StatusBar } from 'expo-status-bar';
-
-
-//// IMPLENT OWN REDUCER FUNCTION TO MANAGE USER STATE
-//// TO SEE THE REFERENCE. https://reactnavigation.org/docs/auth-flow/
-//// TL;DR: MAKE REDUCER FUNCTION WHICH MANAGAES SIGNIN, SIGNUP AND LOADING
-
 
 const HomeScreen = ({ navigation, route }: any) => {
 	const { user, loading, error } = useContext(AuthContext);
@@ -30,7 +23,7 @@ const HomeScreen = ({ navigation, route }: any) => {
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerTitle: () => <HeaderTitle />,
-			headerLeft: () => <HeaderLeft handleSignOut={handleSignOut} uri={user?.photoURL}/>,
+			headerLeft: () => <HeaderLeft handlePress={handlePress} uri={user?.photoURL}/>,
 			headerRight: () => <HeaderRight user={user}/>,
 			headerStyle: {
 				backgroundColor: 'transparent'
@@ -44,8 +37,8 @@ const HomeScreen = ({ navigation, route }: any) => {
 		}
 	}, [route])
 
-	const handleSignOut = () => {
-		logOut()
+	const handlePress = () => {
+		navigation.navigate('Profile', { uid: user.uid })
 	}
 
 	return (

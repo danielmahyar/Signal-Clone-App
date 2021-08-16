@@ -14,6 +14,7 @@ import { AuthContext } from './auth/auth-context';
 import AddUserToChat from './screens/AddUserToChat';
 import { auth } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import ProfileScreen from './screens/ProfileScreen';
 
 
 const Stack = createStackNavigator()
@@ -42,6 +43,7 @@ export default function App() {
               <>
                 {/* When user are logged in */}
                 <Stack.Screen name="Home" component={HomeScreen}/>
+                <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen name="AddChat" component={AddChatScreen}/>
                 <Stack.Screen name="Chat" component={ChatScreen}/>
                 <Stack.Screen name="ChatSettings" component={ChatSettingScreen}/>

@@ -8,12 +8,13 @@ const ChatList = ({ search, snapshots }: any) => {
 	return (
 		<>
 			{filteredSearch.map((chat: any) => {
-				const { name } = chat.data()
+				const { name, people } = chat.data()
 				return (
 					<ChatListItem
 						key={chat.id}
 						navigation={navigation}
 						chatId={chat.id}
+						chatPeople={people}
 						chatName={name}
 					/>
 				)

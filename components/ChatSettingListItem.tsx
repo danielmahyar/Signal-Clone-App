@@ -10,7 +10,7 @@ const ChatSettingListItem = ({ title, listItems }: any) => {
 		<View>
 			<Text h4>{title}</Text>
 			{listItems.map((listItem: any, index: number) => (
-				<TouchableOpacity key={index++} onPress={() => navigation.navigate(listItem.nav, listItem?.payload)}>
+				<TouchableOpacity key={index++} onPress={() => navigation.navigate(listItem.nav, {...listItem?.payload})}>
 					<ListItem topDivider style={{ flex: 1 }}>
 						<AntDesign 
 							name={listItem.iconName}

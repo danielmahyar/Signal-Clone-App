@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
 import { Message } from '../screens/ChatScreen'
 
-const ChatUser = ({ photoURL, displayName, text }: Message) => {
+const ChatUser = ({ photoURL, displayName, text, handleLongPress, messageId }: Message) => {
 	return (
 		<View style={styles.receiver}>
 			<Avatar
@@ -17,7 +17,7 @@ const ChatUser = ({ photoURL, displayName, text }: Message) => {
 				}}
 			/>
 			<Text style={styles.recieverName}>{displayName}</Text>
-			<TouchableOpacity style={styles.textContainer}>
+			<TouchableOpacity style={styles.textContainer} onLongPress={() => handleLongPress(messageId)}>
 				<Text style={styles.receiverText}>{text}</Text>
 			</TouchableOpacity>
 		</View>	

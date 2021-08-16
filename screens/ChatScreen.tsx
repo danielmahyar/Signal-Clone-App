@@ -19,6 +19,9 @@ export type Message = {
 	timestamp: any;
 	displayName: string;
 	uid: string;
+	navigation: any;
+	handleLongPress?: any;
+	messageId: string;
 }
 
 /**
@@ -32,18 +35,17 @@ const ChatScreen = ({ navigation, route }: any) => {
 	const [listHeight, setListHeight] = useState(0)
 	const scrollRef = useRef<any>(null)
 	const { user } = useContext(AuthContext)
-	const { chatId, chatName } = route.params
-
+	const { chatId, chatName, chatPeople } = route.params
 	const ref = firestore.collection(`chats/${chatId}/messages`)
-	const [snapshots, loading, error]: any = useCollection(ref.orderBy('timestamp').limitToLast(pagination))
+	const [messages, loading, error]: any = useCollection(ref.orderBy('timestamp').limitToLast(pagination))
 	
 	useLayoutEffect(() => {
 		let lastIndex: number = 0
-		let areMessages = false
+		let photoURL = 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png' 
 
-		if(snapshots) {
-			areMessages = snapshots.docs.length > 0
-			lastIndex = snapshots.docs.length - 1
+		if(messages && messages.docs.length > 0) {
+			lastIndex = messages.docs.length - 1
+			photoURL = messages?.docs[lastIndex].data().photoURL
 		}
 
 		navigation.setOptions({
@@ -52,11 +54,11 @@ const ChatScreen = ({ navigation, route }: any) => {
 			headerBackTitleVisible: false,
 			headerTitle: () => (
 				<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-					<TouchableOpacity onPress={() => navigation.navigate('ChatSettings', { chatName })}>
+					<TouchableOpacity onPress={() => navigation.navigate('ChatSettings', { chatName, photoURL, chatId, chatPeople })}>
 						<View style={tailwind('flex-row items-center')}>
 							<Avatar 
 								rounded
-								source={{ uri: (areMessages === true) ? snapshots?.docs[lastIndex].data().photoURL : 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png' }}
+								source={{ uri: photoURL }}
 							/>
 							<Text style={tailwind('text-white ml-2 font-bold')}>{chatName}</Text>
 						</View>
@@ -98,12 +100,12 @@ const ChatScreen = ({ navigation, route }: any) => {
 				</TouchableOpacity>
 			)
 		})
-	}, [snapshots])
+	}, [messages])
 
 	
 	useEffect(() => {
 		scrollRef?.current?.scrollTo({ y: listHeight })
-	}, [snapshots, listHeight])
+	}, [messages, listHeight])
 
 	const handleMessageSend = async() => {
 		if(userMessage === '') return 
@@ -137,6 +139,10 @@ const ChatScreen = ({ navigation, route }: any) => {
 		})
 	}
 
+	const handleLongPress = (messageId: string) => {
+		console.log(`${messageId} was longpressed`)
+	}
+
 	return (
 		<KeyboardAvoidingView
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -159,24 +165,26 @@ const ChatScreen = ({ navigation, route }: any) => {
 					>  
 					
 						{/* Chat */}
-						{snapshots?.docs.map((snapshot: any) => {
-							const docId = snapshot.id
-							const data: Message = snapshot.data()
+						{messages?.docs.map((message: any) => {
+							const docId = message.id
+							const data: Message = {...message.data(), messageId: docId}
 
 							if(user?.uid === data.uid) {
 								//Messages from the user
 								return (
 									<ChatUser
 										key={docId}
-										{...data} 
+										{...data}
+										handleLongPress={handleLongPress}
 									/>
 								)
 							} else {
 								//Messages from others
 								return(
-									<ChatOther 
+									<ChatOther
 										key={docId}
 										{...data}
+										navigation={navigation}
 									/>
 								)
 							}

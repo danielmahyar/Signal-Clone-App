@@ -8,6 +8,7 @@ import { AntDesign } from '@expo/vector-icons'
 import ChatSettingListItem from '../components/ChatSettingListItem'
 
 const ChatSettingScreen = ({ navigation, route }: any) => {
+	const { chatId, chatName, chatPeople, photoURL } = route.params
 	const lists = [
 		{
 			title: 'Group Settings',
@@ -15,17 +16,12 @@ const ChatSettingScreen = ({ navigation, route }: any) => {
 				{
 					iconName: 'adduser',
 					title: 'Add an User to the Chat',
-					nav: 'AddUser'
-				}
-			]
-		},
-		{
-			title: 'Chat Settings',
-			listItems: [
-				{
-					iconName: 'adduser',
-					title: 'Add User to the Chat',
-					nav: 'AddUser'
+					nav: 'AddUser',
+					payload: { 
+						chatId,
+						chatName,
+						chatPeople
+					}
 				}
 			]
 		}
@@ -35,12 +31,12 @@ const ChatSettingScreen = ({ navigation, route }: any) => {
 		<SafeAreaProvider style={{ flex: 1, backgroundColor: 'white' }}>
 				<View style={{ justifyContent: 'center', alignItems: 'center', margin: 10 }}>
 					<Avatar 
-						source={{ uri: 'https://genslerzudansdentistry.com/wp-content/uploads/2015/11/anonymous-user.png' }}
+						source={{ uri: photoURL }}
 						size={100}
 						rounded
 					/>
 					<Text h2>{route.params.chatName}</Text>
-					<TouchableOpacity onPress={() => navigation.navigate('AddUser')}>
+					<TouchableOpacity onPress={() => navigation.navigate('AddUser', { chatId, chatPeople, chatName })}>
 						<AntDesign 
 							name="adduser"
 							size={30}

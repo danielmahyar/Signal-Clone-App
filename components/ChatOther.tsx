@@ -4,7 +4,11 @@ import { Avatar } from 'react-native-elements/dist/avatar/Avatar'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Message } from '../screens/ChatScreen'
 
-const ChatOther = ({ photoURL, displayName, text }: Message) => {
+const ChatOther = ({ photoURL, displayName, text, navigation, uid }: Message) => {
+	const handleNav = () => {
+		navigation.navigate('Profile', { uid, isSelf: false })
+	}
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.sender}>
@@ -19,7 +23,7 @@ const ChatOther = ({ photoURL, displayName, text }: Message) => {
 					}}
 				/>
 				<Text style={styles.senderName}>{displayName}</Text>
-				<TouchableOpacity style={styles.textContainer}>
+				<TouchableOpacity style={styles.textContainer} onPress={handleNav}>
 					<Text style={styles.senderText}>{text}</Text>
 				</TouchableOpacity>
 			</View>
