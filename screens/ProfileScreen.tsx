@@ -3,7 +3,8 @@ import { View, Text } from 'react-native'
 import { Button } from 'react-native-elements'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { AuthContext } from '../auth/auth-context'
-import { logOut } from '../auth/auth-functions'
+import OtherProfile from '../components/Profile/OtherProfile'
+import UserProfile from '../components/Profile/UserProfile'
 import { getUserInfo } from '../database/firestore-query'
 
 type UserRoute = {
@@ -14,21 +15,20 @@ type UserRoute = {
 
 const ProfileScreen = ({ navigation, route }: { navigation: any, route: UserRoute}) => {
 	const [userProfile, setUserProfile] = useState<any>(null)
+	const [isUser, setIsUser] = useState(false) 
 	const { user } = useContext(AuthContext)
 	const { uid } = route.params
 	
 	useEffect(() => {
-		const async = async() => {
+		const async = () => {
 			if(user?.uid === uid) {
 				setUserProfile(user)
+				setIsUser(true)
 			} else {
-				try {
-					const user = await getUserInfo(uid)
+				getUserInfo(uid).then(user => {
+					setIsUser(false)
 					setUserProfile(user)
-					
-				} catch (error) {
-					console.log(error)
-				}
+				}).catch(err => console.log(err))
 			}
 		}
 
@@ -36,17 +36,17 @@ const ProfileScreen = ({ navigation, route }: { navigation: any, route: UserRout
 
 	}, [])
 
-	const handleSignOut = async() => {
-		await logOut()
-	}
-
 	return (
 		<SafeAreaProvider>
-			<Text>Hello {userProfile?.displayName}</Text>
-			<Button 
-				title="Sign Out" 
-				onPress={handleSignOut}
-			/>
+			{isUser && userProfile ? (
+				<UserProfile 
+					name={userProfile?.displayName}
+				/>
+			) : (		
+				<OtherProfile
+					name={userProfile?.displayName}
+				/>
+			)}
 		</SafeAreaProvider>
 	)
 }

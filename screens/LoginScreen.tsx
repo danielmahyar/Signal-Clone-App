@@ -23,8 +23,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 
 
 	return (
-		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-			<KeyboardAvoidingView behavior="padding" style={styles.container}>
+		<KeyboardAvoidingView behavior="padding" style={styles.container}>
+				<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 					<>
 						<Image 
 							source={{
@@ -81,8 +81,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 
 						<View style={{ height: 150 }}></View>
 					</>
-			</KeyboardAvoidingView>
 		</TouchableWithoutFeedback>
+			</KeyboardAvoidingView>
 	)
 }
 

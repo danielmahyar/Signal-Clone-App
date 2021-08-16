@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Avatar, ListItem } from 'react-native-elements'
-import { Button } from 'react-native-elements/dist/buttons/Button'
+import { Button } from 'react-native-elements'
 import { firestore } from '../firebase'
 
 const ChatListItem = ({ navigation, chatName, chatId, chatPeople }: any) => {
@@ -23,13 +23,13 @@ const ChatListItem = ({ navigation, chatName, chatId, chatPeople }: any) => {
 	return (
 		<>
 			{dataState && (
-				<TouchableOpacity onPress={() => navigation.navigate('Chat', { chatId, chatName, chatPeople })}>
 					<ListItem.Swipeable 
 						bottomDivider
+						onPress={() => navigation.navigate('Chat', { chatId, chatName, chatPeople })}
 						leftContent={
 							<Button
 							  title="Info"
-							  icon={{ name: 'info', color: 'white' }}
+							  icon={{ name: 'info', color: 'blue' }}
 							  buttonStyle={{ minHeight: '100%' }}
 							/>
 						   }
@@ -40,6 +40,7 @@ const ChatListItem = ({ navigation, chatName, chatId, chatPeople }: any) => {
 							  buttonStyle={{ minHeight: '100%', backgroundColor: 'red' }}
 							/>
 						   }
+						   
 					>
 						<Avatar 
 							rounded
@@ -55,7 +56,6 @@ const ChatListItem = ({ navigation, chatName, chatId, chatPeople }: any) => {
 							</ListItem.Subtitle>
 						</ListItem.Content>
 					</ListItem.Swipeable>
-						</TouchableOpacity>
 			)}	
 		</>
 	)

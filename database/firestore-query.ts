@@ -12,3 +12,8 @@ export const addUserToChat = async (newUserUid: string, chatId: string) => {
 		people: firebase.firestore.FieldValue.arrayUnion(newUserUid)
 	})
 }
+
+export const deleteChat = async (uid: string) => {
+	const ref = firestore.collection('chats').doc(uid)
+	await ref.delete()
+}

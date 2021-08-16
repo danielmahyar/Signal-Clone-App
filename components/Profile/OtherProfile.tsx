@@ -1,10 +1,10 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 
-const OtherProfile = () => {
+const OtherProfile = ({ name }: any) => {
 	return (
 		<View>
-			<Text></Text>
+			<Text>This is {name}'s profilepage</Text>
 		</View>
 	)
 }
